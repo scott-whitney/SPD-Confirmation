@@ -1,8 +1,12 @@
 // import xlsxFile from 'read-excel-file'
+const csv = require('csv-parser');
+const fs = require('fs');
 
-const xlsxFile = require('read-excel-file/node');
- 
-xlsxFile('./Data.xlsx').then((rows) => {
-  console.log(rows);
-  console.table(rows);
- })
+fs.createReadStream('UPS_CONFIRMATIONS.csv')
+  .pipe(csv())
+  .on('data', (row) => {
+    console.log(row);
+  })
+  .on('end', () => {
+    console.log('CSV file successfully processed');
+  });
