@@ -6,6 +6,7 @@ const masterPath = 'UPS_CONFIRMATIONS.csv'
 const backupPath = 'UPS_DATA_BACKUP.csv'
 const backupFolderPath = 'UPS_DATA_ORGANIZED'
 var results = []
+var currentSearch = []
 
 // check if master file exists/ can be found and is named properly - if its not named properly console log what the name should be and where it needs to be put then exit program
 
@@ -156,25 +157,20 @@ function searchBackup() {
   .on('end', () => {
     console.log('Data Ready hit arrow key');
   });
-
-
-
-
-
   console.log('summoning the search menu for main backup')
   inquirer.prompt([
     {
       type: "rawlist",
       name: 'search',
-      message: "What would you like to search the main backup csv for?",
+      message: "What would you like to search the main backup csv for? you results will be console logged as well as written to a RESULTS.csv",
       choices: ['order number', 'tracking number', 'destination', 'weight', 'cost - input a range', 'return to main menu']
     }
   ]).then(answers => {
     console.log(answers);
     if(answers.search == 'order number'){
        searchOrderNumber()
-
     } else if (answers.search == 'tracking number'){
+      searchTrackingNumber()
 
     } else if (answers.search == 'destination'){
 
@@ -189,6 +185,20 @@ function searchBackup() {
   })
 
 }
+function searchResults() {
+  console.log('writing your results to the RESULTS.csv')
+  fs.writeFile('RESULTS.csv', JSON.stringify(currentSearch), function(err){
+    if(err) {
+      return console.log(err);
+    }
+    console.log('Results Succesfully recorded in RESULTS.csv')
+    searchBackup()
+  })
+}
+function searchResultsTest() {
+
+}
+
 function searchOrderNumber() {
   inquirer.prompt([
     {
@@ -198,10 +208,35 @@ function searchOrderNumber() {
     }
   ]).then(async answers => {
     try {
+      console.log("Searching for " + answers.orderNumber)
       // let orderDetails = results.find(o => o.ORDERNUMBER == answers.orderNumber)
       // console.log(orderDetails)
       let orderMultiple = results.filter(results => results.ORDERNUMBER == answers.orderNumber)
       console.log(orderMultiple)
+      currentSearch.push(orderMultiple)
+      searchResultsTest()
+
+    } catch(e){
+      console.log(e)
+    }
+  })
+}
+function searchTrackingNumber() {
+  inquirer.prompt([
+    {
+      type: "input",
+      name: 'trackingNumber',
+      message: 'input a tracking number'
+    }
+  ]).then(async answers => {
+    try {
+      console.log("Searching for " + answers.trackingNumber)
+      // let orderDetails = results.find(o => o.ORDERNUMBER == answers.orderNumber)
+      // console.log(orderDetails)
+      let orderMultiple = results.filter(results => results.TRACKINGNUMBER == answers.trackingNumber.toUpperCase())
+      console.log(orderMultiple)
+      currentSearch.push(orderMultiple)
+      searchBackup()
 
     } catch(e){
       console.log(e)
