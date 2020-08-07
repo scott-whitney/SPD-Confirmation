@@ -2,6 +2,7 @@
 const csv = require('csv-parser');
 const fs = require('fs');
 const inquirer = require('inquirer');
+const ObjectsToCsv = require('objects-to-csv');
 const masterPath = 'UPS_CONFIRMATIONS.csv'
 const backupPath = 'UPS_DATA_BACKUP.csv'
 const backupFolderPath = 'UPS_DATA_ORGANIZED'
@@ -196,7 +197,13 @@ function searchResults() {
   })
 }
 function searchResultsTest() {
+  (async () => {
+    const csv = ObjectsToCsv(currentSearch);
 
+    await csv.toDisk('RESULTS.csv');
+    searchBackup()
+
+  })
 }
 
 function searchOrderNumber() {
