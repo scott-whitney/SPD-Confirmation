@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "csv-parser": "^2.3.3",
+    "inquirer": "^7.3.3",
     "read-excel-file": "^4.0.7"
   }
 }
