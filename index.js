@@ -2,12 +2,36 @@
 const csv = require('csv-parser');
 const fs = require('fs');
 const inquirer = require('inquirer');
-const ObjectsToCsv = require('objects-to-csv');
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const csvWriter = createCsvWriter({
+  path: './test.csv',
+  header: [
+{id: 'TRACKINGNUMBER', title: 'TRACKINGNUMBER'},
+{id: 'ORDERNUMBER', title: 'ORDERNUMBER'},
+{id: 'DATE', title: 'DATE'},
+{id: 'RECEIVER', title: 'RECEIVER'},
+{id: 'COST', title: 'COST'},
+{id: 'WEIGHT', title: 'WEIGHT'},
+{id: 'RECEIVERORDERNUMBER', title: 'RECEIVERORDERNUMBER'}
+// TRACKINGNUMBER,ORDERNUMBER,DATE,RECEIVER,COST,WEIGHT,RECEIVERORDERNUMBER
+  ]
+}); 
 const masterPath = 'UPS_CONFIRMATIONS.csv'
 const backupPath = 'UPS_DATA_BACKUP.csv'
 const backupFolderPath = 'UPS_DATA_ORGANIZED'
 var results = []
 var currentSearch = []
+var testRecord = [
+  {name: 'Bob', lang: 'French, English'},
+  {name: 'Mary', lang: 'English'}
+]
+// {id: 'TRACKINGNUMBER', title: 'TRACKINGNUMBER'},
+// {id: 'ORDERNUMBER', title: 'ORDERNUMBER'},
+// {id: 'DATE', title: 'DATE'},
+// {id: 'RECEIVER', title: 'RECEIVER'},
+// {id: 'COST', title: 'COST'},
+// {id: 'WEIGHT', title: 'WEIGHT'},
+// {id: 'RECEIVERORDERNUMBER', title: 'RECEIVERORDERNUMBER'}
 
 // check if master file exists/ can be found and is named properly - if its not named properly console log what the name should be and where it needs to be put then exit program
 
@@ -197,13 +221,18 @@ function searchResults() {
   })
 }
 function searchResultsTest() {
-  (async () => {
-    const csv = ObjectsToCsv(currentSearch);
 
-    await csv.toDisk('RESULTS.csv');
-    searchBackup()
+    console.log('attempting to use csv-writer')
+    csvWriter.writeRecords(currentSearch)
+    .then(() => {
+      console.log('Results Saved')
+      searchBackup()
+    })
 
-  })
+
+    // searchBackup()
+
+
 }
 
 function searchOrderNumber() {
@@ -220,7 +249,9 @@ function searchOrderNumber() {
       // console.log(orderDetails)
       let orderMultiple = results.filter(results => results.ORDERNUMBER == answers.orderNumber)
       console.log(orderMultiple)
-      currentSearch.push(orderMultiple)
+      currentSearch = orderMultiple;
+      console.log(currentSearch)
+ 
       searchResultsTest()
 
     } catch(e){
