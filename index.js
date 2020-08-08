@@ -158,8 +158,8 @@ function mainMenu() {
     } else if (answers.currentProcess == 'do confirmations') {
 
     } else if (answers.currentProcess == 'create new sub folder') {
-
-    }
+      createNewSubFolder();
+    } 
 
   })
 }
@@ -309,7 +309,25 @@ function updateBackup() {
 }
 // ----------------
 
+function createNewSubFolder() {
+  console.log('creating a new sub folder')
+  inquirer.prompt([
+    {
+      type: 'input',
+      name: 'folderName',
+      message: "what will this folder be called?"
+    },
+    {
+      type: 'checkbox',
+      name: 'information',
+      message: "What information do you want stored in this folder?",
+      choices: ['Tracking Number', 'Order Number', 'Date', 'Receiver', 'Cost', 'Weight', 'ReceiverOrderNumber']
+    }
+  ]).then(answers => {
+    console.log(answers)
+  })
 
+}
 
 
 
