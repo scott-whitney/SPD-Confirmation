@@ -4,7 +4,7 @@ const fs = require('fs');
 const inquirer = require('inquirer');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csvWriter = createCsvWriter({
-  path: './test.csv',
+  path: './RESULTS.csv',
   header: [
 {id: 'TRACKINGNUMBER', title: 'TRACKINGNUMBER'},
 {id: 'ORDERNUMBER', title: 'ORDERNUMBER'},
@@ -13,7 +13,6 @@ const csvWriter = createCsvWriter({
 {id: 'COST', title: 'COST'},
 {id: 'WEIGHT', title: 'WEIGHT'},
 {id: 'RECEIVERORDERNUMBER', title: 'RECEIVERORDERNUMBER'}
-// TRACKINGNUMBER,ORDERNUMBER,DATE,RECEIVER,COST,WEIGHT,RECEIVERORDERNUMBER
   ]
 }); 
 const masterPath = 'UPS_CONFIRMATIONS.csv'
@@ -21,17 +20,7 @@ const backupPath = 'UPS_DATA_BACKUP.csv'
 const backupFolderPath = 'UPS_DATA_ORGANIZED'
 var results = []
 var currentSearch = []
-var testRecord = [
-  {name: 'Bob', lang: 'French, English'},
-  {name: 'Mary', lang: 'English'}
-]
-// {id: 'TRACKINGNUMBER', title: 'TRACKINGNUMBER'},
-// {id: 'ORDERNUMBER', title: 'ORDERNUMBER'},
-// {id: 'DATE', title: 'DATE'},
-// {id: 'RECEIVER', title: 'RECEIVER'},
-// {id: 'COST', title: 'COST'},
-// {id: 'WEIGHT', title: 'WEIGHT'},
-// {id: 'RECEIVERORDERNUMBER', title: 'RECEIVERORDERNUMBER'}
+
 
 // check if master file exists/ can be found and is named properly - if its not named properly console log what the name should be and where it needs to be put then exit program
 
@@ -187,25 +176,30 @@ function searchBackup() {
     {
       type: "rawlist",
       name: 'search',
-      message: "What would you like to search the main backup csv for? you results will be console logged as well as written to a RESULTS.csv",
-      choices: ['order number', 'tracking number', 'destination', 'weight', 'cost - input a range', 'return to main menu']
+      message: "What would you like to search the main backup csv for? Your results will be written to a RESULTS.csv",
+      choices: ['order number', 'tracking number', 'receiver', 'go back']
     }
   ]).then(answers => {
     console.log(answers);
-    if(answers.search == 'order number'){
-       searchOrderNumber()
-    } else if (answers.search == 'tracking number'){
-      searchTrackingNumber()
-
-    } else if (answers.search == 'destination'){
-
-    } else if (answers.search == 'weight'){
-
-    } else if (answers.search == 'cost - input a range'){
-
-    } else if (answers.searc == 'return to main menu'){
-      mainMenu()
+    try {
+      if(answers.search == 'order number'){
+        searchOrderNumber()
+     } else if (answers.search == 'tracking number'){
+       searchTrackingNumber()
+     } else if (answers.search == 'receiver'){
+       searchRecepientsName()
+     } else if (answers.search == 'weight'){
+ 
+     } else if (answers.search == 'cost - input a range'){
+ 
+     } else if (answers.search == 'go back'){
+       mainMenu()
+     }
+      
+    } catch(e){
+      console.log(e)
     }
+    
 
   })
 
@@ -273,8 +267,30 @@ function searchTrackingNumber() {
       // console.log(orderDetails)
       let orderMultiple = results.filter(results => results.TRACKINGNUMBER == answers.trackingNumber.toUpperCase())
       console.log(orderMultiple)
-      currentSearch.push(orderMultiple)
-      searchBackup()
+      currentSearch = orderMultiple
+      searchResultsTest()
+
+    } catch(e){
+      console.log(e)
+    }
+  })
+}
+function searchRecepientsName(){
+  inquirer.prompt([
+    {
+      type: "input",
+      name: 'recepientsName',
+      message: "input a receiver's name"
+    }
+  ]).then(async answers => {
+    try {
+      console.log("Searching for " + answers.recepientsName)
+      // let orderDetails = results.find(o => o.ORDERNUMBER == answers.orderNumber)
+      // console.log(orderDetails)
+      let orderMultiple = results.filter(results => results.RECEIVER.toUpperCase() == answers.recepientsName.toUpperCase())
+      console.log(orderMultiple)
+      currentSearch = orderMultiple
+      searchResultsTest()
 
     } catch(e){
       console.log(e)
@@ -282,7 +298,7 @@ function searchTrackingNumber() {
   })
 }
 
-
+// ----------------
 function updateBackup() {
   console.log("updating backup CSV with current master CSV");
   fs.copyFile(masterPath, backupPath, (err) => {
@@ -291,6 +307,9 @@ function updateBackup() {
     mainMenu();
   })
 }
+// ----------------
+
+
 
 
 
