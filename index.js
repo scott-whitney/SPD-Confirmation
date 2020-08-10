@@ -339,8 +339,13 @@ function createNewSubFolder() {
       console.log(phaseResults)
       for( i = 0; i < results.length; i++){
         results[i][search]
-        console.log(results[i][search])
+        
+        newSubFolder.push(results[i][search])
+        // this creates an array - instead we want to loop through and grab all the necissary information at once
+        // put that into an object and then push that object into the array at once with the necessary keys
+        // this will be fun 
       }
+      console.log(newSubFolder)
     }
 
   })
