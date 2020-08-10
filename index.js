@@ -20,6 +20,7 @@ const backupPath = 'UPS_DATA_BACKUP.csv'
 const backupFolderPath = 'UPS_DATA_ORGANIZED'
 var results = []
 var currentSearch = []
+var newSubFolder = []
 
 
 // check if master file exists/ can be found and is named properly - if its not named properly console log what the name should be and where it needs to be put then exit program
@@ -310,6 +311,11 @@ function updateBackup() {
 // ----------------
 
 function createNewSubFolder() {
+  fs.createReadStream(backupPath)
+  .pipe(csv())
+  .on('data', (data) => results.push(data))
+  .on('end', () => {
+  });
   console.log('creating a new sub folder')
   inquirer.prompt([
     {
@@ -321,10 +327,15 @@ function createNewSubFolder() {
       type: 'checkbox',
       name: 'information',
       message: "What information do you want stored in this folder?",
-      choices: ['Tracking Number', 'Order Number', 'Date', 'Receiver', 'Cost', 'Weight', 'ReceiverOrderNumber']
+      choices: ['TRACKINGNUMBER', 'ORDERNUMBER', 'DATE', 'RECEIVER', 'COST', 'WEIGHT', 'RECEIVERORDERNUMBER']
     }
   ]).then(answers => {
     console.log(answers)
+    for( i = 0; i < answers.information.length; i++){
+      console.log(answers.information[i])
+      console.log(results[0].TRACKINGNUMBER)
+    }
+
   })
 
 }
