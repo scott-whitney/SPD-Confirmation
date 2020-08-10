@@ -331,9 +331,16 @@ function createNewSubFolder() {
     }
   ]).then(answers => {
     console.log(answers)
+    // nested for loop for now
     for( i = 0; i < answers.information.length; i++){
-      console.log(answers.information[i])
-      console.log(results[0].TRACKINGNUMBER)
+      
+      let search = answers.information[i]
+      let phaseResults = results[0]
+      console.log(phaseResults)
+      for( i = 0; i < results.length; i++){
+        results[i][search]
+        console.log(results[i][search])
+      }
     }
 
   })
