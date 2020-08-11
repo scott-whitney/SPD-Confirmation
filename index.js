@@ -216,7 +216,7 @@ function searchResults() {
   })
 }
 function searchResultsTest() {
-
+  csvWriter.fileWriter.path = `./RESULTS.csv`
     console.log('attempting to use csv-writer')
     csvWriter.writeRecords(currentSearch)
     .then(() => {
@@ -331,26 +331,44 @@ function createNewSubFolder() {
     }
   ]).then(answers => {
     console.log(answers)
-    // nested for loop for now
-    for( i = 0; i < answers.information.length; i++){
-      
-      let search = answers.information[i]
-      let phaseResults = results[0]
-      console.log(phaseResults)
-      for( i = 0; i < results.length; i++){
-        results[i][search]
-        
-        newSubFolder.push(results[i][search])
-        // this creates an array - instead we want to loop through and grab all the necissary information at once
-        // put that into an object and then push that object into the array at once with the necessary keys
-        // this will be fun 
-      }
-      console.log(newSubFolder)
-    }
+for( i = 0; i < results.length; i++) {
+  let objectShipping = {
+    TRACKINGNUMBER: '',
+    ORDERNUMBER: '',
+    DATE: '',
+    RECEIVER: '',
+    COST: '',
+    WEIGHT: '',
+    RECEIVERORDERNUMBER: ''
+  }
+  for( a = 0; a < answers.information.length; a++){
+
+    let search = answers.information[a]
+    objectShipping[search] = results[i][search]
+  }
+  newSubFolder.push(objectShipping)
+
+
+}
+console.log(newSubFolder)
+newSubFolderGenerator(answers.folderName)
 
   })
 
 }
+function newSubFolderGenerator(name) {
+  
+  csvWriter.fileWriter.path = `./${name}.csv`
+  console.log('attempting to use csv-writer')
+  csvWriter.writeRecords(newSubFolder)
+  .then(() => {
+    console.log('Results Saved')
+    mainMenu()
+  })
+}
+
+
+
 
 
 
