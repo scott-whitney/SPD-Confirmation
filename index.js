@@ -1,10 +1,13 @@
 // import xlsxFile from 'read-excel-file'
 const csv = require('csv-parser');
 const fs = require('fs');
+const path = require('path');
+const express = require('express')
 const inquirer = require('inquirer');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+var project_folder;
 const csvWriter = createCsvWriter({
-  path: './RESULTS.csv',
+  path: path.join(__dirname, '/RESULTS.csv'),
   header: [
 {id: 'TRACKINGNUMBER', title: 'TRACKINGNUMBER'},
 {id: 'ORDERNUMBER', title: 'ORDERNUMBER'},
@@ -15,9 +18,9 @@ const csvWriter = createCsvWriter({
 {id: 'RECEIVERORDERNUMBER', title: 'RECEIVERORDERNUMBER'}
   ]
 }); 
-const masterPath = 'UPS_CONFIRMATIONS.csv'
-const backupPath = 'UPS_DATA_BACKUP.csv'
-const backupFolderPath = 'UPS_DATA_ORGANIZED'
+const masterPath = path.join(__dirname, '/UPS_CONFIRMATIONS.csv');
+const backupPath = path.join(__dirname, '/UPS_DATA_BACKUP.csv');
+const backupFolderPath = express.static(path.join(__dirname, '/UPS_DATA_ORGANIZED'));
 var results = []
 var currentSearch = []
 var newSubFolder = []
@@ -36,14 +39,30 @@ var newSubFolder = []
 // if they say no say the message "have the program on the shipping computer update the master csv file to the network"
 
 // mainMenu()
-startUp()
+beginProcess()
+function beginProcess() {
+  if(process.pkg){
+    project_folder = path.dirname(process.execPath)
+    console.log('exe')
+    startUp()
+  } else {
+    project_folder = __dirname
+    console.log(project_folder)
+    console.log('node')
+    startUp()
+  }
+}
+
 function startUp() {
   try {
     if (fs.existsSync(masterPath)){
+      process.cwd
       console.log('Master CSV successfully located')
       setupCheck()
     } else {
+      console.log(masterPath)
       console.log("Master CSV is missing - please put the UPS_CONFIRMATIONS.csv file into the same directory as this executable.")
+      
     }
   } catch(err) {
     console.log(err)
@@ -53,8 +72,7 @@ function setupCheck() {
   try {
     if (fs.existsSync(backupPath)) {
       console.log('Backup CSV successfully located')
-      backupFoldersCheck();
-
+      mainMenu()
     } else {
       console.log("Backup CSV doesn't exist yet switching to initial setup menu")
       initialSetupMenu()
