@@ -24,6 +24,7 @@ const backupFolderPath = express.static(path.join(__dirname, '/UPS_DATA_ORGANIZE
 var results = []
 var currentSearch = []
 var newSubFolder = []
+var updateResults = []
 
 
 // check if master file exists/ can be found and is named properly - if its not named properly console log what the name should be and where it needs to be put then exit program
@@ -319,12 +320,30 @@ function searchRecepientsName(){
 
 // ----------------
 function updateBackup() {
-  console.log("updating backup CSV with current master CSV");
-  fs.copyFile(masterPath, backupPath, (err) => {
-    if (err) throw err;
-    console.log('backup file updated')
-    mainMenu();
+  fs.createReadStream(masterPath)
+  .pipe(csv())
+  .on('data', (data) => updateResults.push(data))
+  .on('end', () => {
+    console.log(updateResults)
+  });
+
+  csvWriter.fileWriter.path = backupPath
+  console.log('attempting to use csv-writer')
+  csvWriter.writeRecords(updateResults)
+  .then(() => {
+    console.log('Results Saved')
+    mainMenu()
   })
+
+
+
+
+  // console.log("updating backup CSV with current master CSV");
+  // fs.copyFile(masterPath, backupPath, (err) => {
+  //   if (err) throw err;
+  //   console.log('backup file updated')
+  //   mainMenu();
+  // })
 }
 // ----------------
 
