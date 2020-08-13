@@ -1,13 +1,10 @@
 // import xlsxFile from 'read-excel-file'
 const csv = require('csv-parser');
 const fs = require('fs');
-const path = require('path');
-const express = require('express')
 const inquirer = require('inquirer');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
-var project_folder;
 const csvWriter = createCsvWriter({
-  path: path.join(__dirname, '/RESULTS.csv'),
+  path: './RESULTS.csv',
   header: [
 {id: 'TRACKINGNUMBER', title: 'TRACKINGNUMBER'},
 {id: 'ORDERNUMBER', title: 'ORDERNUMBER'},
@@ -18,9 +15,9 @@ const csvWriter = createCsvWriter({
 {id: 'RECEIVERORDERNUMBER', title: 'RECEIVERORDERNUMBER'}
   ]
 }); 
-const masterPath = path.join(__dirname, '/UPS_CONFIRMATIONS.csv');
-const backupPath = path.join(__dirname, '/UPS_DATA_BACKUP.csv');
-const backupFolderPath = express.static(path.join(__dirname, '/UPS_DATA_ORGANIZED'));
+const masterPath = 'UPS_CONFIRMATIONS.csv'
+const backupPath = 'UPS_DATA_BACKUP.csv'
+const backupFolderPath = 'UPS_DATA_ORGANIZED'
 var results = []
 var currentSearch = []
 var newSubFolder = []
@@ -40,30 +37,14 @@ var updateResults = []
 // if they say no say the message "have the program on the shipping computer update the master csv file to the network"
 
 // mainMenu()
-beginProcess()
-function beginProcess() {
-  if(process.pkg){
-    project_folder = path.dirname(process.execPath)
-    console.log('exe')
-    startUp()
-  } else {
-    project_folder = __dirname
-    console.log(project_folder)
-    console.log('node')
-    startUp()
-  }
-}
-
+startUp()
 function startUp() {
   try {
     if (fs.existsSync(masterPath)){
-      process.cwd
       console.log('Master CSV successfully located')
       setupCheck()
     } else {
-      console.log(masterPath)
       console.log("Master CSV is missing - please put the UPS_CONFIRMATIONS.csv file into the same directory as this executable.")
-      
     }
   } catch(err) {
     console.log(err)
@@ -73,7 +54,8 @@ function setupCheck() {
   try {
     if (fs.existsSync(backupPath)) {
       console.log('Backup CSV successfully located')
-      mainMenu()
+      backupFoldersCheck();
+
     } else {
       console.log("Backup CSV doesn't exist yet switching to initial setup menu")
       initialSetupMenu()
@@ -300,7 +282,7 @@ function searchRecepientsName(){
     {
       type: "input",
       name: 'recepientsName',
-      message: "input a receiver's name"
+      message: "input a receiver's name - need to be specific ex not just AMAZON - instead :  AMAZON.COM INC"
     }
   ]).then(async answers => {
     try {
@@ -320,30 +302,30 @@ function searchRecepientsName(){
 
 // ----------------
 function updateBackup() {
-  fs.createReadStream(masterPath)
-  .pipe(csv())
-  .on('data', (data) => updateResults.push(data))
-  .on('end', () => {
-    console.log(updateResults)
-  });
+  // fs.createReadStream(masterPath)
+  // .pipe(csv())
+  // .on('data', (data) => updateResults.push(data))
+  // .on('end', () => {
+  //   console.log(updateResults)
+  // });
 
-  csvWriter.fileWriter.path = backupPath
-  console.log('attempting to use csv-writer')
-  csvWriter.writeRecords(updateResults)
-  .then(() => {
-    console.log('Results Saved')
-    mainMenu()
-  })
-
-
-
-
-  // console.log("updating backup CSV with current master CSV");
-  // fs.copyFile(masterPath, backupPath, (err) => {
-  //   if (err) throw err;
-  //   console.log('backup file updated')
-  //   mainMenu();
+  // csvWriter.fileWriter.path = backupPath
+  // console.log('attempting to use csv-writer')
+  // csvWriter.writeRecords(updateResults)
+  // .then(() => {
+  //   console.log('Results Saved')
+  //   mainMenu()
   // })
+
+
+
+
+  console.log("updating backup CSV with current master CSV");
+  fs.copyFile(masterPath, backupPath, (err) => {
+    if (err) throw err;
+    console.log('backup file updated')
+    mainMenu();
+  })
 }
 // ----------------
 
